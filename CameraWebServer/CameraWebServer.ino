@@ -24,8 +24,8 @@ PubSubClient MQTT(webcamproject);
 #define ID_MQTT "GUINCHOLA"
 #include "camera_pins.h"
  
-const char* ssid = "TURBONET_LUCASS";
-const char* password = "1825cias";
+const char* ssid = "WifiFedorento"; 
+const char* password = "12345678";
 
 void startCameraServer();
 
@@ -156,8 +156,8 @@ void loop() {
    if(Intruso == true){
     retorna_Intruso(); 
    }
-  //Serial.print("Camera Ready! Use 'http://");
-  //Serial.print(WiFi.localIP());
-  //Serial.println("' to connect");
+  Serial.print("Camera Ready! Use 'http://");
+  Serial.print(WiFi.localIP());
+  Serial.println("' to connect");
   //delay(1000);
 }
