@@ -1,5 +1,10 @@
 #include "esp_camera.h"
 #include <WiFi.h>
+#include <PubSubClient.h>
+bool Autorizado = false;
+bool Intruso = false;
+WiFiClient webcamproject;
+PubSubClient MQTT(webcamproject);
 
 //
 // WARNING!!! PSRAM IC required for UXGA resolution and high JPEG quality
@@ -16,13 +21,23 @@
 //#define CAMERA_MODEL_M5STACK_ESP32CAM // No PSRAM
 #define CAMERA_MODEL_AI_THINKER // Has PSRAM
 //#define CAMERA_MODEL_TTGO_T_JOURNAL // No PSRAM
-
+#define ID_MQTT "GUINCHOLA"
 #include "camera_pins.h"
-
-const char* ssid = "WifiFedorento";
-const char* password = "12345678";
+ 
+const char* ssid = "TURBONET_LUCASS";
+const char* password = "1825cias";
 
 void startCameraServer();
+
+const char* BROKER_MQTT = "test.mosquitto.org";
+int BROKER_PORT = 1883; 
+
+#define TOPICO_PUBLISH "Esp32_FaceWebServer"
+
+void initMQTT(void){
+  MQTT.setServer(BROKER_MQTT, BROKER_PORT); 
+  //MQTT.setCallback(mqtt_callback);
+}
 
 void setup() {
   Serial.begin(115200);
@@ -99,6 +114,9 @@ void setup() {
   Serial.println("");
   Serial.println("WiFi connected");
 
+  initMQTT();
+ 
+
   startCameraServer();
 
   Serial.print("Camera Ready! Use 'http://");
@@ -106,10 +124,40 @@ void setup() {
   Serial.println("' to connect");
 }
 
+void VerificaConexoesWiFIEMQTT(void)
+{
+  if (!MQTT.connected())
+  reconnectMQTT(); //se não há conexão com o Broker, a conexão é refeita
+  //reconnectWiFi(); //se não há conexão com o WiFI, a conexão é refeita
+}
+
+void retorna_Intruso(){
+  MQTT.publish(TOPICO_PUBLISH, "Intruso detectado");
+  Intruso = false;
+}
+void retorna_Registrado(){
+  MQTT.publish(TOPICO_PUBLISH, "Pessoa autorizada");
+  Autorizado = false;
+}
+
+void reconnectMQTT(void)
+{
+  while (!MQTT.connected()){
+     MQTT.connect(ID_MQTT);
+  }
+}
+
 void loop() {
-  
-  Serial.print("Camera Ready! Use 'http://");
-  Serial.print(WiFi.localIP());
-  Serial.println("' to connect");
-  delay(1000);
+   VerificaConexoesWiFIEMQTT();
+   MQTT.loop();
+   if(Autorizado == true){
+    retorna_Registrado(); 
+   }
+   if(Intruso == true){
+    retorna_Intruso(); 
+   }
+  //Serial.print("Camera Ready! Use 'http://");
+  //Serial.print(WiFi.localIP());
+  //Serial.println("' to connect");
+  //delay(1000);
 }
