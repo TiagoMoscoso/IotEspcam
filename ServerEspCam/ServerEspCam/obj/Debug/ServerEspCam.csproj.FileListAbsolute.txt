@@ -52,3 +52,7 @@ C:\Users\tiago\OneDrive\Documentos\GitHub\IotEspcam\ServerEspCam\ServerEspCam\ob
 C:\Users\tiago\OneDrive\Documentos\GitHub\IotEspcam\ServerEspCam\ServerEspCam\obj\Debug\ServerEspCam.csproj.CopyComplete
 C:\Users\tiago\OneDrive\Documentos\GitHub\IotEspcam\ServerEspCam\ServerEspCam\obj\Debug\ServerEspCam.exe
 C:\Users\tiago\OneDrive\Documentos\GitHub\IotEspcam\ServerEspCam\ServerEspCam\obj\Debug\ServerEspCam.pdb
+C:\Users\tiago\OneDrive\Documentos\GitHub\IotEspcam\ServerEspCam\ServerEspCam\bin\Debug\Newtonsoft.Json.dll
+C:\Users\tiago\OneDrive\Documentos\GitHub\IotEspcam\ServerEspCam\ServerEspCam\bin\Debug\SendGrid.dll
+C:\Users\tiago\OneDrive\Documentos\GitHub\IotEspcam\ServerEspCam\ServerEspCam\bin\Debug\SendGrid.pdb
+C:\Users\tiago\OneDrive\Documentos\GitHub\IotEspcam\ServerEspCam\ServerEspCam\bin\Debug\StarkbankEcdsa.dll

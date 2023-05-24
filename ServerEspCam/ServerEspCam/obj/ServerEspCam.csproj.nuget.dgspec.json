@@ -45,6 +45,10 @@
             "Npgsql": {
               "target": "Package",
               "version": "[8.0.0-preview.4, )"
+            },
+            "SendGrid": {
+              "target": "Package",
+              "version": "[9.28.1, )"
             }
           }
         }

@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Npgsql;
 using uPLibrary.Networking.M2Mqtt;
 using uPLibrary.Networking.M2Mqtt.Messages;
+using SendGrid;
+using SendGrid.Helpers.Mail;
+
 
 namespace ServerEspCam
 {
@@ -55,8 +59,12 @@ namespace ServerEspCam
                         Console.WriteLine(insertData[1]);
                         command.Parameters.AddWithValue("@Email", insertData[1]);
 
-                       command.ExecuteNonQuery();
+                        Console.WriteLine("Dados salvos no banco de dados com sucesso!");
+                        command.ExecuteNonQuery();
                     }
+                    SendEmail(insertData[1], insertData[0]);
+                    Console.WriteLine("Email de Verificação enviado com sucesso!");
+                    Console.WriteLine();
                 }
             }
         }
@@ -88,6 +96,23 @@ namespace ServerEspCam
             var message = Encoding.UTF8.GetString(e.Message);
             Console.WriteLine(message);
             InsertSql(message);
+        }
+
+
+        public static async Task SendEmail(string toEmail, string username)
+        {
+            string apiKey = "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";
+            var client = new SendGridClient(apiKey);
+
+            var from = new EmailAddress("tiagocarvalhomoscoso@gmail.com", "Tiago Moscoso");
+            var to = new EmailAddress(toEmail, username);
+            string subject = "Usuario Registrado no Serviço EspCam WebServer";
+            var plainTextContent = "Ola " + username + " você foi registrado com sucesso no serviço de reconhecimento facial EspCam WebServer.";
+            var htmlContent = "";
+
+            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+
+            var response = await client.SendEmailAsync(msg);
         }
     }
 
