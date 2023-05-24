@@ -101,7 +101,7 @@ namespace ServerEspCam
 
         public static async Task SendEmail(string toEmail, string username)
         {
-            string apiKey = "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";
+            string apiKey = "xxxxxxxxxxx";
             var client = new SendGridClient(apiKey);
 
             var from = new EmailAddress("tiagocarvalhomoscoso@gmail.com", "Tiago Moscoso");
