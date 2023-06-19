@@ -5,7 +5,7 @@ bool Autorizado = false;
 bool Intruso = false;
 WiFiClient webcamproject;
 PubSubClient MQTT(webcamproject);
-
+int contadorIntruso = 0;
 //
 // WARNING!!! PSRAM IC required for UXGA resolution and high JPEG quality
 //            Ensure ESP32 Wrover Module or other board with PSRAM is selected
@@ -24,15 +24,20 @@ PubSubClient MQTT(webcamproject);
 #define ID_MQTT "GUINCHOLA"
 #include "camera_pins.h"
  
-const char* ssid = "WifiFedorento"; 
-const char* password = "12345678";
+const char* ssid = "PHC2G"; 
+const char* password = "P2025081400";
+camera_fb_t * fb = NULL;
+const int bufferSize = 1024 * 23; // 23552 bytes;
 
 void startCameraServer();
+    
+   
 
-const char* BROKER_MQTT = "test.mosquitto.org";
+const char* BROKER_MQTT = "test.mosquitto.org";//
 int BROKER_PORT = 1883; 
 
-#define TOPICO_PUBLISH "Esp32_FaceWebServer"
+#define TOPICO_PUBLISH "Esp32_FaceWebServer"//
+#define TOPICO_IMAGES "Esp32_FaceWebServer_IMAGE"
 
 void initMQTT(void){
   MQTT.setServer(BROKER_MQTT, BROKER_PORT); 
@@ -74,8 +79,8 @@ void setup() {
     config.fb_count = 2;
   } else {
     config.frame_size = FRAMESIZE_SVGA;
-    config.jpeg_quality = 12;
-    config.fb_count = 1;
+    config.jpeg_quality = 10;
+    config.fb_count = 2;
   }
 
 #if defined(CAMERA_MODEL_ESP_EYE)
@@ -132,6 +137,9 @@ void VerificaConexoesWiFIEMQTT(void)
 }
 
 void retorna_Intruso(){
+  
+  grabImage();
+  
   MQTT.publish(TOPICO_PUBLISH, "Intruso detectado");
   Intruso = false;
 }
@@ -147,6 +155,32 @@ void reconnectMQTT(void)
   }
 }
 
+void grabImage(){
+  fb = esp_camera_fb_get();
+  if (!fb) {
+     Serial.println("ERRO AO TIRAR FOTO");
+  }
+  if(fb != NULL && fb->format == PIXFORMAT_JPEG && fb->len < bufferSize){
+    Serial.print("Image Length: ");
+    Serial.print(fb->len);
+    Serial.print("\t Publish Image: ");
+    Serial.println("\tCAIU NO IF");
+    Serial.print("WIDTH: ");
+    Serial.println(&fb->width);
+    bool result = MQTT.publish(TOPICO_IMAGES, aux);//(const char*)fb->buf
+    Serial.println("PRINTANDO OQ FOI ENVIADO AQ NO TERMINAL");
+    Serial.println(result);
+
+    if(!result){
+      ESP.restart();
+    }
+  }
+  esp_camera_fb_return(fb);
+  //delay(1);
+}
+
+
+int aut = 1;
 void loop() {
    VerificaConexoesWiFIEMQTT();
    MQTT.loop();
@@ -156,8 +190,11 @@ void loop() {
    if(Intruso == true){
     retorna_Intruso(); 
    }
-  Serial.print("Camera Ready! Use 'http://");
-  Serial.print(WiFi.localIP());
-  Serial.println("' to connect");
+   if (aut){
+      Serial.print("Camera Ready! Use 'http://");
+      Serial.print(WiFi.localIP());
+      aut = 0;
+    }
+  //Serial.println("' to connect");
   //delay(1000);
 }
